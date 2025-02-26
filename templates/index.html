@@ -35,89 +35,201 @@
             color: #333;
         }
 
+        .user-info {
+            padding: 12px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
         .input-field {
             width: 100%;
-            min-height: 120px;
+            min-height: 6em;  /* 4行文本高度 (1.5 * 4 = 6em) */
             padding: 12px;
-            border: 1px solid #ddd;
+            border: 1px solid #dee2e6;
             border-radius: 4px;
-            margin-bottom: 8px;
             font-size: 16px;
-            resize: vertical;
+            resize: none;
+            line-height: 1.5;
+            overflow: hidden;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #0d6efd;
         }
 
         .input-field.input-error {
-            border-color: #ff4444;
+            border-color: #dc3545;
         }
 
         .error-message {
-            color: #ff4444;
+            color: #dc3545;
             font-size: 14px;
             margin-top: 4px;
             display: none;
         }
 
+        .input-wrapper {
+            position: relative;
+            width: 100%;
+            min-height: calc(6em + 24px);  /* textarea min-height + padding */
+            margin-bottom: 8px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .char-count {
+            color: #666;
+            font-size: 14px;
+            position: absolute;
+            right: 12px;
+            bottom: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 2px 4px;
+            border-radius: 2px;
+        }
+
         .submit-btn {
-            background-color: #007bff;
+            background-color: #0d6efd;
             color: white;
             border: none;
             padding: 12px 24px;
             border-radius: 4px;
             cursor: pointer;
             font-size: 16px;
-            transition: background-color 0.2s;
+            transition: all 0.2s;
+            width: 100%;
         }
 
         .submit-btn:hover {
-            background-color: #0056b3;
+            background-color: #0b5ed7;
+        }
+
+        .submit-btn:disabled {
+            background-color: #e9ecef;
+            color: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .feedback-success {
+            display: none;
+            animation: fadeIn 0.3s;
+            padding: 20px;
+            background-color: #d1e7dd;
+            border-radius: 4px;
+            color: #0f5132;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="form-group">
-            <div class="label">当前用户：<span id="userEmail">未登录</span></div>
+            <div class="user-info">
+                <div class="label">当前用户：<span id="userEmail">test@example.com</span></div>
+            </div>
             <div class="label">请输入反馈内容：</div>
-            <textarea 
-                class="input-field" 
-                id="feedbackContent"
-                placeholder="请输入您的反馈..." 
-                maxlength="500"
-            ></textarea>
+            <div class="input-wrapper">
+                <textarea 
+                    class="input-field" 
+                    id="feedbackContent"
+                    placeholder="请输入您的反馈内容..."
+                    maxlength="500"
+                ></textarea>
+                <div class="char-count" id="charCount">0/500</div>
+            </div>
             <div class="error-message" id="errorMessage"></div>
         </div>
 
-        <button class="submit-btn" onclick="handleSubmit()">提交反馈</button>
+        <button class="submit-btn" id="submitBtn" onclick="handleSubmit()">提交反馈</button>
+        <div class="feedback-success" id="successMessage">
+            感谢您的反馈！我们会认真考虑您的建议。
+        </div>
     </div>
 
     <script>
+        const textarea = document.getElementById('feedbackContent');
+        const charCount = document.getElementById('charCount');
+        const submitBtn = document.getElementById('submitBtn');
+        const successMessage = document.getElementById('successMessage');
+
+        textarea.addEventListener('input', function() {
+            const length = this.value.length;
+            charCount.textContent = `${length}/500`;
+            
+            // 自动调整高度
+            this.style.height = '96px';
+            this.style.height = this.scrollHeight + 'px';
+            
+            // 清除错误状态
+            if (length > 0) {
+                clearError();
+            }
+        });
+
         function showError(message) {
             const errorElement = document.getElementById('errorMessage');
-            const textarea = document.getElementById('feedbackContent');
+            textarea.classList.add('input-error');
             errorElement.textContent = message;
             errorElement.style.display = 'block';
-            textarea.classList.add('input-error');
         }
 
         function clearError() {
             const errorElement = document.getElementById('errorMessage');
-            const textarea = document.getElementById('feedbackContent');
-            errorElement.style.display = 'none';
             textarea.classList.remove('input-error');
+            errorElement.style.display = 'none';
         }
 
-        function handleSubmit() {
-            const content = document.getElementById('feedbackContent').value;
+        function setLoading(isLoading) {
+            submitBtn.disabled = isLoading;
+            if (isLoading) {
+                submitBtn.textContent = '提交中...';
+                submitBtn.classList.add('loading');
+            } else {
+                submitBtn.textContent = '提交反馈';
+                submitBtn.classList.remove('loading');
+            }
+        }
+
+        async function handleSubmit() {
+            const content = textarea.value.trim();
             
-            if (!content.trim()) {
+            if (!content) {
                 showError('请输入反馈内容');
                 return;
             }
 
-            clearError();
-            // 这里可以添加向后端发送数据的逻辑
-            alert('反馈提交成功！');
+            setLoading(true);
+            
+            // 模拟API调用
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            setLoading(false);
+            textarea.value = '';
+            charCount.textContent = '0/500';
+            successMessage.style.display = 'block';
+            
+            // 3秒后隐藏成功消息
+            setTimeout(() => {
+                successMessage.style.display = 'none';
+            }, 3000);
         }
+
+        // 初始化显示测试用户邮箱
+        document.getElementById('userEmail').textContent = 'test@example.com';
     </script>
 </body>
 </html> 
