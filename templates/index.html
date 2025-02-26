@@ -87,25 +87,25 @@
             position: absolute;
             right: 12px;
             bottom: 12px;
-            background: rgba(255, 255, 255, 0.9);
+            background: rgb(255, 255, 255);
             padding: 2px 4px;
             border-radius: 2px;
         }
 
         .submit-btn {
-            background-color: #0d6efd;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: all 0.2s;
             width: 100%;
+            padding: 12px;
+            background-color: #f3bf14;
+            color: #282c35;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
         }
 
         .submit-btn:hover {
-            background-color: #0b5ed7;
+            background-color: #e5b413;
         }
 
         .submit-btn:disabled {
@@ -165,6 +165,40 @@
         const charCount = document.getElementById('charCount');
         const submitBtn = document.getElementById('submitBtn');
         const successMessage = document.getElementById('successMessage');
+        const userEmailElement = document.getElementById('userEmail');
+
+        // 添加用户数据对象
+        const userData = {
+            userId: '',
+            userName: '',
+            email: ''
+        };
+
+        // 添加 URL 参数解析函数
+        function getQueryParam(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name) ? decodeURIComponent(urlParams.get(name)) : "";
+        }
+
+        // 初始化用户信息
+        function initUserInfo() {
+            try {
+                const userId = getQueryParam("userId");
+                const username = getQueryParam("username");
+                const email = getQueryParam("email");
+
+                if (userId || username || email) {
+                    userData.userId = userId;
+                    userData.userName = username;
+                    userData.email = email;
+                    userEmailElement.textContent = email;
+                } else {
+                    showError("获取用户数据失败，请重新登录");
+                }
+            } catch (err) {
+                showError("获取用户数据失败，请重新登录");
+            }
+        }
 
         textarea.addEventListener('input', function() {
             const length = this.value.length;
@@ -204,32 +238,52 @@
             }
         }
 
+        // 修改提交函数为异步函数
         async function handleSubmit() {
             const content = textarea.value.trim();
             
             if (!content) {
-                showError('请输入反馈内容');
+                showError('反馈内容不能为空！');
                 return;
             }
 
             setLoading(true);
             
-            // 模拟API调用
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            
-            setLoading(false);
-            textarea.value = '';
-            charCount.textContent = '0/500';
-            successMessage.style.display = 'block';
-            
-            // 3秒后隐藏成功消息
-            setTimeout(() => {
-                successMessage.style.display = 'none';
-            }, 3000);
+            try {
+                const response = await fetch('/feedback', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userId: userData.userId,
+                        username: userData.userName,
+                        content: content
+                    }),
+                    timeout: 1500 // 1.5s 超时
+                });
+
+                const result = await response.json();
+                
+                if (result.code === 200) {
+                    textarea.value = '';
+                    charCount.textContent = '0/500';
+                    successMessage.style.display = 'block';
+                    setTimeout(() => {
+                        successMessage.style.display = 'none';
+                    }, 3000);
+                } else {
+                    showError('提交失败，请稍后再试');
+                }
+            } catch (error) {
+                showError('提交失败，请稍后再试');
+            } finally {
+                setLoading(false);
+            }
         }
 
-        // 初始化显示测试用户邮箱
-        document.getElementById('userEmail').textContent = 'test@example.com';
+        // 页面加载时初始化用户信息
+        document.addEventListener('DOMContentLoaded', initUserInfo);
     </script>
 </body>
 </html> 
