@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <!-- Primary Meta Tags -->
+    <title>用户反馈</title>
+    <meta name="title" content="用户反馈">
+    <meta name="description" content="用户反馈表单">
+    
+    <!-- Mobile Meta -->
+    <meta name="theme-color" content="#ffffff">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+    <style>
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .input-field {
+            width: 100%;
+            min-height: 120px;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            font-size: 16px;
+            resize: vertical;
+        }
+
+        .input-field.input-error {
+            border-color: #ff4444;
+        }
+
+        .error-message {
+            color: #ff4444;
+            font-size: 14px;
+            margin-top: 4px;
+            display: none;
+        }
+
+        .submit-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.2s;
+        }
+
+        .submit-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-group">
+            <div class="label">当前用户：<span id="userEmail">未登录</span></div>
+            <div class="label">请输入反馈内容：</div>
+            <textarea 
+                class="input-field" 
+                id="feedbackContent"
+                placeholder="请输入您的反馈..." 
+                maxlength="500"
+            ></textarea>
+            <div class="error-message" id="errorMessage"></div>
+        </div>
+
+        <button class="submit-btn" onclick="handleSubmit()">提交反馈</button>
+    </div>
+
+    <script>
+        function showError(message) {
+            const errorElement = document.getElementById('errorMessage');
+            const textarea = document.getElementById('feedbackContent');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            textarea.classList.add('input-error');
+        }
+
+        function clearError() {
+            const errorElement = document.getElementById('errorMessage');
+            const textarea = document.getElementById('feedbackContent');
+            errorElement.style.display = 'none';
+            textarea.classList.remove('input-error');
+        }
+
+        function handleSubmit() {
+            const content = document.getElementById('feedbackContent').value;
+            
+            if (!content.trim()) {
+                showError('请输入反馈内容');
+                return;
+            }
+
+            clearError();
+            // 这里可以添加向后端发送数据的逻辑
+            alert('反馈提交成功！');
+        }
+    </script>
+</body>
+</html> 
