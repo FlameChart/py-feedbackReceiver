@@ -139,7 +139,7 @@
     <div class="container">
         <div class="form-group">
             <div class="user-info">
-                <div class="label">当前用户：<span id="userEmail">test@example.com</span></div>
+                <div class="label">当前用户：<span id="userName">未登录</span></div>
             </div>
             <div class="label">请输入反馈内容：</div>
             <div class="input-wrapper">
@@ -165,13 +165,12 @@
         const charCount = document.getElementById('charCount');
         const submitBtn = document.getElementById('submitBtn');
         const successMessage = document.getElementById('successMessage');
-        const userEmailElement = document.getElementById('userEmail');
+        const userNameElement = document.getElementById('userName');
 
         // 添加用户数据对象
         const userData = {
             userId: '',
             userName: '',
-            email: ''
         };
 
         // 添加 URL 参数解析函数
@@ -185,13 +184,10 @@
             try {
                 const userId = getQueryParam("userId");
                 const username = getQueryParam("username");
-                const email = getQueryParam("email");
-
-                if (userId || username || email) {
+                if (userId && username) {
                     userData.userId = userId;
                     userData.userName = username;
-                    userData.email = email;
-                    userEmailElement.textContent = email;
+                    userNameElement.textContent = username;
                 } else {
                     showError("获取用户数据失败，请重新登录");
                 }
