@@ -1,3 +1,6 @@
+# 排除参考项目
+reference-app/
+
 ### VisualStudioCode template
 .vscode/*
 !.vscode/settings.json
