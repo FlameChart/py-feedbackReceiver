@@ -1,4 +1,4 @@
-# 用户反馈系统
+# 用户反馈系统 [![wakatime](https://wakatime.com/badge/user/b1cd697f-bbcd-4389-83a2-fe3b452e18fb/project/7df71da7-de75-44e0-89ce-146f332e5e23.svg)](https://wakatime.com/badge/user/b1cd697f-bbcd-4389-83a2-fe3b452e18fb/project/7df71da7-de75-44e0-89ce-146f332e5e23)
 
 一个简单的用户反馈收集系统，支持用户提交反馈并存储到 MySQL 数据库。
 
